@@ -12,6 +12,8 @@ import { NzNotificationService } from 'ng-zorro-antd';
 })
 export class MenuComponent implements OnInit {
 
+    submit() { }
+
   inputv: FormGroup = this.builder.group({
     email: [null, [Validators.required, Validators.email]],
     password: [null, [Validators.required]],
