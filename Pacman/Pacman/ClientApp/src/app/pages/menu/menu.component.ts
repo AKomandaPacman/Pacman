@@ -12,11 +12,9 @@ import { NzNotificationService } from 'ng-zorro-antd';
 })
 export class MenuComponent implements OnInit {
 
-    submit() { }
-
   inputv: FormGroup = this.builder.group({
-    email: [null, [Validators.required, Validators.email]],
-    password: [null, [Validators.required]],
+    email: [null],
+    password: [null],
     remember: [true]
   });
 
@@ -28,9 +26,5 @@ export class MenuComponent implements OnInit {
   ngOnInit() {
   }
 
-  // this.inputv = this.builder.group({
-  //     email: [null, [Validators.required, Validators.email]],
-  //     password: [null, [Validators.required]],
-  //     remember: [true]
-  // });
+    submit() {}
 }

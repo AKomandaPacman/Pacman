@@ -1,202 +1,384 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnChanges } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
+import { Player } from 'src/app/models/Player.model';
+import { Item } from 'src/app/models/Item.model';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { Observable, timer, interval } from 'rxjs';
+import { update, forEach } from 'lodash-es';
+import { Injectable } from '@angular/core';
+import { forkJoin } from 'rxjs';
 
 @Component({
-  selector: 'xn-arena',
-  templateUrl: './arena.component.html',
-  styleUrls: ['./arena.component.less']
+    selector: 'xn-arena',
+    templateUrl: './arena.component.html',
+    styleUrls: ['./arena.component.less']
 })
+
+
 export class ArenaComponent implements OnInit {
 
-  constructor() { }
+    currentPlayerPosX: number = <number>{};
+    currentPlayerPosY: number = <number>{};
+    player: Player = <Player>{};
+    itemsAll: Item[] = <Item[]>{};
+    itemsFetched: Item[] = <Item[]>[{ id: 0, type: "1", posX: 18, posY: 20 }];
+    updatedX: number = <number>{};
+    updatedY: number = <number>{};
 
-  ngOnInit() {
+    constructor(private builder: FormBuilder, private http: HttpClient) {
 
-    (function () {
+    }
 
-      var canvas = <HTMLCanvasElement>document.getElementById("canvas");   // the canvas where game will be drawn
-      var context = canvas.getContext("2d");            // canvas context
-      var levelCols = 11;							// level width, in tiles
-      var levelRows = 9;							// level height, in tiles
-      var tileSize = 32;							// tile size, in pixels
-      var playerCol = 5;                                  // player starting column
-      var playerRow = 4;                                  // player starting row
-      var leftPressed = false;                            // are we pressing LEFT arrow key?
-      var rightPressed = false;                           // are we pressing RIGHT arrow key?
-      var upPressed = false;                              // are we pressing UP arrow key?
-      var downPressed = false;                            // are we pressing DOWN arrow key?
-      var movementSpeed = 3;                              // the speed we are going to move, in pixels per frame
-      var playerXSpeed = 0;                               // player horizontal speed, in pixels per frame
-      var playerYSpeed = 0;                               // player vertical speed, in pixels per frame
 
-      var level = [        						// the 11x9 level - 1=wall, 0=empty space
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1],
-        [1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1],
-        [1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-      ];
+    funcGet() {
 
-      var playerYPos = playerRow * tileSize;				// converting Y player position from tiles to pixels
-      var playerXPos = playerCol *= tileSize;               // converting X player position from tiles to pixels
+        let getPlayers = this.http.get<Player>(`${environment.backend_url}/Players/1`);
+        let getItems = this.http.get<Item[]>(`${environment.backend_url}/Items`);
 
-      canvas.width = tileSize * levelCols;                   // canvas width. Won't work without it even if you style it from CSS
-      canvas.height = tileSize * levelRows;                   // canvas height. Same as before
+        forkJoin([getPlayers, getItems]).subscribe(results => {
+            this.currentPlayerPosX = results[0].posX;
+            this.currentPlayerPosY = results[0].posY;
+            this.player = results[0];
+            this.itemsFetched = results[1];
+        });
+    }
 
-      // simple WASD listeners
+    funcUpdate(x, y) {
 
-      document.addEventListener("keydown", function (e) {
-        console.log(e.keyCode);
-        switch (true) {
-          case ((e.keyCode === 37) || (e.keyCode === 65)):
-            leftPressed = true;
-            break;
-          case ((e.keyCode === 38) || (e.keyCode === 87)):
-            upPressed = true;
-            break;
-          case ((e.keyCode === 39) || (e.keyCode === 68)):
-            rightPressed = true;
-            break;
-          case ((e.keyCode === 40) || (e.keyCode === 83)):
-            downPressed = true;
-            break;
+        if ((x == null) || (y == null)) {
+            x = 4; y = 5;
         }
-      }, false);
 
-      document.addEventListener("keyup", function (e) {
-        switch (true) {
-          case ((e.keyCode === 37) || (e.keyCode === 65)):
-            leftPressed = false;
-            break;
-          case ((e.keyCode === 38) || (e.keyCode === 87)):
-            upPressed = false;
-            break;
-          case ((e.keyCode === 39) || (e.keyCode === 68)):
-            rightPressed = false;
-            break;
-          case ((e.keyCode === 40) || (e.keyCode === 83)):
-            downPressed = false;
-            break;
-        }
-      }, false);
+        this.player.posX = x;
+        this.player.posY = y;
+        this.player.id = 1;
 
-      // function to display the level
+        //veliau sitiems irgi imti reiksmes is parametru
+        this.player.boosted = false;
+        this.player.ghost = false;
+        this.player.score = 2;
+        this.player.name = "nickYellow";
 
-      function renderLevel() {
+
+        this.http
+            .put<Player>(`${environment.backend_url}/Players/1`, this.player)
+            .subscribe();
+
+    }
+
+    drawItems(context, canvas, contextInfo) {
+
         // clear the canvas
         context.clearRect(0, 0, canvas.width, canvas.height);
-        // walls = red boxes
-        context.fillStyle = "#072649";
-        for (var i = 0; i < levelRows; i++) {
-          for (var j = 0; j < levelCols; j++) {
-            if (level[i][j] == 1) {
-              context.fillRect(j * tileSize, i * tileSize, tileSize, tileSize);
+        contextInfo.clearRect(0, 0, canvas.width, canvas.height);
+
+        Array.prototype.forEach.call(this.itemsFetched, it => {
+
+            if (it.type == "1")
+                context.fillStyle = "#7409FB";
+            else if (it.type == "2")
+                context.fillStyle = "#F39C12";
+            else if (it.type == "3")
+                context.fillStyle = "#48C9B0";
+
+            let tileSizeItem = 10;
+            context.fillRect(it.posX, it.posY, tileSizeItem, tileSizeItem);
+        });
+    }
+
+
+
+    ngOnInit() {
+
+        this.funcGet();
+        interval(100).subscribe(x => {
+            this.funcGet();
+        });
+
+
+        var Movement = function () {
+            this.direction = "";
+        };
+
+        Movement.prototype = {
+            setStrategy: function (direction) {
+                this.direction = direction;
+            },
+
+            move: function (pressed) {
+                return this.direction.move(pressed);
             }
-          }
+        };
+
+        var UP = function () {
+            this.move = function (pressed) {
+                if (pressed)
+                    upPressed = true;
+                else upPressed = false;
+            }
+        };
+
+        var DOWN = function () {
+            this.move = function (pressed) {
+                if (pressed)
+                    downPressed = true;
+                else downPressed = false;
+            }
+        };
+
+        var RIGHT = function () {
+            this.move = function (pressed) {
+                if (pressed)
+                    rightPressed = true;
+                else rightPressed = false;
+            }
+        };
+
+        var LEFT = function () {
+            this.move = function (pressed) {
+                if (pressed)
+                    leftPressed = true;
+                else leftPressed = false;
+            }
+        };
+
+
+        // the 4 strategies
+        var up = new UP();
+        var down = new DOWN();
+        var left = new LEFT();
+        var right = new RIGHT();
+
+        var movement = new Movement();
+
+        var canvas = <HTMLCanvasElement>document.getElementById("canvas");   // the canvas where game will be drawn
+        var context = canvas.getContext("2d");            // canvas context
+        var canvasInfo = <HTMLCanvasElement>document.getElementById("canvasInfo");   // the canvas where game will be drawn
+        var contextInfo = canvasInfo.getContext("2d");            // canvas context
+        var levelCols = 16;							// level width, in tiles
+        var levelRows = 9;							// level height, in tiles
+        var tileSize = 15;							// tile size, in pixels
+        var playerCol = 5;                                  // player starting column
+        var playerRow = 4;                                  // player starting row
+        var leftPressed = false;                            // are we pressing LEFT arrow key?
+        var rightPressed = false;                           // are we pressing RIGHT arrow key?
+        var upPressed = false;                              // are we pressing UP arrow key?
+        var downPressed = false;                            // are we pressing DOWN arrow key?
+        var movementSpeed = 1;                              // the speed we are going to move, in pixels per frame
+        var playerXSpeed = 0;                               // player horizontal speed, in pixels per frame
+        var playerYSpeed = 0;                               // player vertical speed, in pixels per frame
+
+
+        var level = [        						// the 16x9 level - 1=wall, 0=empty space
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1],
+            [1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1],
+            [1, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1],
+            [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        ];
+
+        var playerYPos = playerRow * tileSize;				// converting Y player position from tiles to pixels
+        var playerXPos = playerCol *= tileSize;               // converting X player position from tiles to pixels
+
+        //interval(50).subscribe(x => {
+        //    this.clearCanvas(context, canvas, contextInfo);
+        //});
+
+        interval(100).subscribe(x => {
+            this.funcUpdate(playerXPos, playerYPos);
+        });
+
+        interval(1).subscribe(x => {
+            this.drawItems(context, canvas, contextInfo);
+        });
+
+
+        canvas.width = tileSize * levelCols;      //1000             // canvas width. Won't work without it even if you style it from CSS
+        canvas.height = tileSize * levelRows;                   // canvas height. Same as before
+
+        // simple WASD listeners
+
+        document.addEventListener("keydown", function (e) {
+            console.log(e.keyCode);
+            switch (true) {
+                case ((e.keyCode === 37) || (e.keyCode === 65)):
+                    movement.setStrategy(left);
+                    movement.move(true);
+                    break;
+                case ((e.keyCode === 38) || (e.keyCode === 87)):
+                    movement.setStrategy(up);
+                    movement.move(true);
+                    break;
+                case ((e.keyCode === 39) || (e.keyCode === 68)):
+                    movement.setStrategy(right);
+                    movement.move(true);
+                    break;
+                case ((e.keyCode === 40) || (e.keyCode === 83)):
+                    movement.setStrategy(down);
+                    movement.move(true);
+                    break;
+            }
+        }, false);
+
+        document.addEventListener("keyup", function (e) {
+            switch (true) {
+                case ((e.keyCode === 37) || (e.keyCode === 65)):
+                    movement.setStrategy(left);
+                    movement.move(false);
+                    break;
+                case ((e.keyCode === 38) || (e.keyCode === 87)):
+                    movement.setStrategy(up);
+                    movement.move(false);
+                    break;
+                case ((e.keyCode === 39) || (e.keyCode === 68)):
+                    movement.setStrategy(right);
+                    movement.move(false);
+                    break;
+                case ((e.keyCode === 40) || (e.keyCode === 83)):
+                    movement.setStrategy(down);
+                    movement.move(false);
+                    break;
+            }
+        }, false);
+
+
+        function renderLevel() {
+            
+            // walls = red boxes
+            context.fillStyle = "#072649";
+            for (var i = 0; i < levelRows; i++) {
+                for (var j = 0; j < levelCols; j++) {
+                    if (level[i][j] == 1) {
+                        context.fillRect(j * tileSize, i * tileSize, tileSize, tileSize);
+                    }
+                }
+            }
+
+            contextInfo.font = "30px Arial";
+            contextInfo.fillStyle = "#fff200";
+            contextInfo.fillText(playerXPos.toString() + ";" + playerYPos.toString(), 50, 50);
+
+            //let tileSizeItem = 10;
+            //context.fillStyle = "#008000";
+            //context.fillRect(14, 18, tileSizeItem, tileSizeItem);
+
+        //     Array.prototype.forEach.call(this.itemsFetc, it => {
+
+        //    if (it.type == "1")
+        //        context.fillStyle = "#008000";
+        //    else if (it.type == "2")
+        //        context.fillStyle = "#00FFFF";
+        //    else if (it.type == "3")
+        //        context.fillStyle = "#0000FF";
+
+        //    let tileSizeItem = 10;
+        //    context.fillRect(it.posX, it.posY, tileSizeItem, tileSizeItem);
+        //});
+
+            // player
+            context.fillStyle = "#fff200";
+            context.fillRect(playerXPos, playerYPos, tileSize, tileSize);
         }
-        // player = green box
-        context.fillStyle = "#fff200";
-        context.fillRect(playerXPos, playerYPos, tileSize, tileSize);
-      }
 
-      // this function will do its best to make stuff work at 60FPS - please notice I said "will do its best"
 
-      window.requestAnimationFrame = (function (callback) {
-        return window.requestAnimationFrame || window.webkitRequestAnimationFrame || (<any>window).mozRequestAnimationFrame || (<any>window).oRequestAnimationFrame || (<any>window).msRequestAnimationFrame ||
-          function (callback) {
-            window.setTimeout(callback, 1000 / 60);
-          };
-      })();
+        // this function will do its best to make stuff work at 60FPS - please notice I said "will do its best"
 
-      // function to handle the game itself
+        window.requestAnimationFrame = (function (callback) {
+            return window.requestAnimationFrame || window.webkitRequestAnimationFrame || (<any>window).mozRequestAnimationFrame || (<any>window).oRequestAnimationFrame || (<any>window).msRequestAnimationFrame ||
+                function (callback) {
+                    window.setTimeout(callback, 1000 / 60);
+                };
+        })();
 
-      function updateGame() {
+        // function to handle the game itself
 
-        // no friction or inertia at the moment, so at every frame initial speed is set to zero
-        playerXSpeed = 0;
-        playerYSpeed = 0;
+        function updateGame() {
+            // no friction or inertia at the moment, so at every frame initial speed is set to zero
+            playerXSpeed = 0;
+            playerYSpeed = 0;
 
-        // updating speed according to key pressed
-        if (rightPressed) {
-          playerXSpeed = movementSpeed;
-        }
-        else {
-          if (leftPressed) {
-            playerXSpeed = -movementSpeed;
-          }
-          else {
-            if (upPressed) {
-              playerYSpeed = -movementSpeed;
+
+            // updating speed according to key pressed
+            if (rightPressed) {
+                playerXSpeed = movementSpeed;
             }
             else {
-              if (downPressed) {
-                playerYSpeed = movementSpeed;
-              }
+                if (leftPressed) {
+                    playerXSpeed = -movementSpeed;
+                }
+                else {
+                    if (upPressed) {
+                        playerYSpeed = -movementSpeed;
+                    }
+                    else {
+                        if (downPressed) {
+                            playerYSpeed = movementSpeed;
+                        }
+                    }
+                }
             }
-          }
+
+            // updating player position
+
+            playerXPos += playerXSpeed;
+            playerYPos += playerYSpeed;
+
+            // check for horizontal collisions
+
+            var baseCol = Math.floor(playerXPos / tileSize);
+            var baseRow = Math.floor(playerYPos / tileSize);
+            var colOverlap = playerXPos % tileSize;
+            var rowOverlap = playerYPos % tileSize;
+
+            if (playerXSpeed > 0) {
+                if ((level[baseRow][baseCol + 1] && !level[baseRow][baseCol]) || (level[baseRow + 1][baseCol + 1] && !level[baseRow + 1][baseCol] && rowOverlap)) {
+                    playerXPos = baseCol * tileSize;
+                }
+            }
+
+            if (playerXSpeed < 0) {
+                if ((!level[baseRow][baseCol + 1] && level[baseRow][baseCol]) || (!level[baseRow + 1][baseCol + 1] && level[baseRow + 1][baseCol] && rowOverlap)) {
+                    playerXPos = (baseCol + 1) * tileSize;
+                }
+            }
+
+            // check for vertical collisions
+
+            baseCol = Math.floor(playerXPos / tileSize);
+            baseRow = Math.floor(playerYPos / tileSize);
+            colOverlap = playerXPos % tileSize;
+            rowOverlap = playerYPos % tileSize;
+
+            if (playerYSpeed > 0) {
+                if ((level[baseRow + 1][baseCol] && !level[baseRow][baseCol]) || (level[baseRow + 1][baseCol + 1] && !level[baseRow][baseCol + 1] && colOverlap)) {
+                    playerYPos = baseRow * tileSize;
+                }
+            }
+
+            if (playerYSpeed < 0) {
+                if ((!level[baseRow + 1][baseCol] && level[baseRow][baseCol]) || (!level[baseRow + 1][baseCol + 1] && level[baseRow][baseCol + 1] && colOverlap)) {
+                    playerYPos = (baseRow + 1) * tileSize;
+                }
+            }
+
+            // rendering level
+
+            renderLevel();
+
+            // update the game in about 1/60 seconds
+
+            requestAnimationFrame(function () {
+                updateGame();
+            });
         }
 
-        // updating player position
+        updateGame();
 
-        playerXPos += playerXSpeed;
-        playerYPos += playerYSpeed;
-
-        // check for horizontal collisions
-
-        var baseCol = Math.floor(playerXPos / tileSize);
-        var baseRow = Math.floor(playerYPos / tileSize);
-        var colOverlap = playerXPos % tileSize;
-        var rowOverlap = playerYPos % tileSize;
-
-        if (playerXSpeed > 0) {
-          if ((level[baseRow][baseCol + 1] && !level[baseRow][baseCol]) || (level[baseRow + 1][baseCol + 1] && !level[baseRow + 1][baseCol] && rowOverlap)) {
-            playerXPos = baseCol * tileSize;
-          }
-        }
-
-        if (playerXSpeed < 0) {
-          if ((!level[baseRow][baseCol + 1] && level[baseRow][baseCol]) || (!level[baseRow + 1][baseCol + 1] && level[baseRow + 1][baseCol] && rowOverlap)) {
-            playerXPos = (baseCol + 1) * tileSize;
-          }
-        }
-
-        // check for vertical collisions
-
-        baseCol = Math.floor(playerXPos / tileSize);
-        baseRow = Math.floor(playerYPos / tileSize);
-        colOverlap = playerXPos % tileSize;
-        rowOverlap = playerYPos % tileSize;
-
-        if (playerYSpeed > 0) {
-          if ((level[baseRow + 1][baseCol] && !level[baseRow][baseCol]) || (level[baseRow + 1][baseCol + 1] && !level[baseRow][baseCol + 1] && colOverlap)) {
-            playerYPos = baseRow * tileSize;
-          }
-        }
-
-        if (playerYSpeed < 0) {
-          if ((!level[baseRow + 1][baseCol] && level[baseRow][baseCol]) || (!level[baseRow + 1][baseCol + 1] && level[baseRow][baseCol + 1] && colOverlap)) {
-            playerYPos = (baseRow + 1) * tileSize;
-          }
-        }
-
-        // rendering level
-
-        renderLevel();
-
-        // update the game in about 1/60 seconds
-
-        requestAnimationFrame(function () {
-          updateGame();
-        });
-      }
-
-      updateGame();
-
-    })();
-
-  }
+    }
 
 }
