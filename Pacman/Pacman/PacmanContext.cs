@@ -14,5 +14,6 @@ namespace Pacman
 
         }
         public DbSet<Player> Players { get; set; }
+        public DbSet<Item> Items { get; set; }
     }
 }
