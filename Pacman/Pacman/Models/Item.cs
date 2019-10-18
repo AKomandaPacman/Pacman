@@ -8,7 +8,7 @@ namespace Pacman.Models
 {
     public class Item : Entity
     {
-        public int type { get; set; }
+        public ItemType type { get; set; }
         public double posX { get; set; }
         public double posY { get; set; }
 

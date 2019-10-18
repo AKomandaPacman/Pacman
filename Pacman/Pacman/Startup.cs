@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Pacman.Repository;
 
 namespace Pacman
 {
@@ -22,6 +23,8 @@ namespace Pacman
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.AddScoped<IItemRepository, ItemRepository>();
 
             services.AddDbContext<PacmanContext>(cfg => cfg.UseSqlServer(Configuration.GetConnectionString("PacmanConnectionString")));
 
