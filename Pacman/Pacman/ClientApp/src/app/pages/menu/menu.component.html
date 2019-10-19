@@ -8,7 +8,7 @@
                 <h1 style="text-align: center;">PAC-MAN Battle Royale</h1>
                 <br><br>
                 <nz-form-item>
-                    <input type="text" nz-input formControlName="email" placeholder="Nickname (ar ji matys kiti zaidejai?)"
+                    <input type="text" nz-input formControlName="email" placeholder="Nickname"
                         style="text-align: center; border-color:black;" />
                     <!-- <ng-template #emailErrorTpl let-control>
                             <ng-container *ngIf="control.hasError('required')">
@@ -21,11 +21,11 @@
                 </nz-form-item>
             </form>
             <!-- <nz-divider nzDashed></nz-divider> -->
-            <a [routerLink]="['/', 'arena']"><button
+            <button
                     style="color:black; background-color:dodgerblue; font-size: 140%; border-color:black;" nz-button
-                    nzBlock nzType="default" (click)="submit()">
+                    nzBlock nzType="default" [routerLink]="['/', 'arena']">
                     Play
-                </button></a>
+            </button>
         </nz-card>
     </div>
 

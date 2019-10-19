@@ -8,6 +8,7 @@ import { Observable, timer, interval } from 'rxjs';
 import { update, forEach } from 'lodash-es';
 import { Injectable } from '@angular/core';
 import { forkJoin } from 'rxjs';
+import * as fs from 'fs';
 
 @Component({
     selector: 'xn-arena',
@@ -22,12 +23,16 @@ export class ArenaComponent implements OnInit {
     currentPlayerPosY: number = <number>{};
     player: Player = <Player>{};
     itemsAll: Item[] = <Item[]>{};
-    itemsFetched: Item[] = <Item[]>[{ id: 0, type: "1", posX: 18, posY: 20 }];
+    itemsFetched: Item[] = <Item[]>[{ id: 0, type: "1", posX: 0, posY: 0 }];
     updatedX: number = <number>{};
     updatedY: number = <number>{};
+    levelRows: number = 9;
+    levelCols: number = 16;
+    tileSize: number = 25;
+
 
     constructor(private builder: FormBuilder, private http: HttpClient) {
-
+        this.funcGet();
     }
 
 
@@ -67,22 +72,39 @@ export class ArenaComponent implements OnInit {
 
     }
 
-    drawItems(context, canvas, contextInfo) {
+    drawItems(context, canvas, contextInfo, levelRows, levelCols, level, tileSize) {
 
         // clear the canvas
         context.clearRect(0, 0, canvas.width, canvas.height);
         contextInfo.clearRect(0, 0, canvas.width, canvas.height);
 
+        // walls
+        for (var i = 0; i < levelRows; i++) {
+            for (var j = 0; j < levelCols; j++) {
+                if (level[i][j] == 1)
+                    context.fillStyle = "#072649";
+                else if (level[i][j] == 0)
+                    context.fillStyle = "#000000";
+
+                context.fillRect(j * tileSize, i * tileSize, tileSize, tileSize);
+            }
+        }
+
         Array.prototype.forEach.call(this.itemsFetched, it => {
 
-            if (it.type == "1")
-                context.fillStyle = "#7409FB";
-            else if (it.type == "2")
-                context.fillStyle = "#F39C12";
-            else if (it.type == "3")
-                context.fillStyle = "#48C9B0";
+            let tileSizeItem = 11;
 
-            let tileSizeItem = 10;
+            if (it.type == "0") { context.fillStyle = "#FFFFFF"; tileSizeItem = 7; }
+            else if (it.type == "1")
+                context.fillStyle = "#F39C12";
+            else if (it.type == "2")
+                context.fillStyle = "#48C9B0";
+            else if (it.type == "3")
+                context.fillStyle = "#7409FB";
+            else if (it.type == "4")
+                context.fillStyle = "#B11C47";
+
+
             context.fillRect(it.posX, it.posY, tileSizeItem, tileSizeItem);
         });
     }
@@ -156,11 +178,11 @@ export class ArenaComponent implements OnInit {
         var context = canvas.getContext("2d");            // canvas context
         var canvasInfo = <HTMLCanvasElement>document.getElementById("canvasInfo");   // the canvas where game will be drawn
         var contextInfo = canvasInfo.getContext("2d");            // canvas context
-        var levelCols = 16;							// level width, in tiles
-        var levelRows = 9;							// level height, in tiles
-        var tileSize = 15;							// tile size, in pixels
+        var tileSize = 20;							// tile size, in pixels
         var playerCol = 5;                                  // player starting column
         var playerRow = 4;                                  // player starting row
+        var playerYPos = playerRow * tileSize;				// converting Y player position from tiles to pixels
+        var playerXPos = playerCol * tileSize;               // converting X player position from tiles to pixels
         var leftPressed = false;                            // are we pressing LEFT arrow key?
         var rightPressed = false;                           // are we pressing RIGHT arrow key?
         var upPressed = false;                              // are we pressing UP arrow key?
@@ -170,36 +192,52 @@ export class ArenaComponent implements OnInit {
         var playerYSpeed = 0;                               // player vertical speed, in pixels per frame
 
 
-        var level = [        						// the 16x9 level - 1=wall, 0=empty space
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1],
-            [1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1],
-            [1, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1],
-            [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        ];
 
-        var playerYPos = playerRow * tileSize;				// converting Y player position from tiles to pixels
-        var playerXPos = playerCol *= tileSize;               // converting X player position from tiles to pixels
+        //var mapNumber = Math.floor(Math.random() * 2) + 1;
+        //var fileName = "../../../assets/maps/map" + mapNumber.toString() + ".txt";
+        var fileName = "../../../assets/maps/map2.txt";
 
-        //interval(50).subscribe(x => {
-        //    this.clearCanvas(context, canvas, contextInfo);
-        //});
+        var allText = "";
+        var file = new XMLHttpRequest();
+        file.open("GET", fileName, false);
+        file.onreadystatechange = function () {
+            if (file.readyState === 4) {
+                if (file.status === 200 || file.status == 0) {
+                    allText = file.responseText;
+                }
+            }
+        }
+        file.send(null);
+
+        var textLines = allText.split('\n');
+        var colsRows = textLines[0].split(':');
+        var levelCols = parseInt(colsRows[0]);        // level width, in tiles
+        var levelRows = parseInt(colsRows[1]);        // level height, in tiles
+
+
+        var level = [];
+        for (var i = 1; i < levelRows + 1; i++) {
+            var rowNumbers = textLines[i].split(',');
+            level[i - 1] = [];
+            for (var j = 0; j < levelCols; j++) {
+                level[i - 1][j] = parseInt(rowNumbers[j]);
+            }
+        }
+
 
         interval(100).subscribe(x => {
             this.funcUpdate(playerXPos, playerYPos);
         });
 
         interval(1).subscribe(x => {
-            this.drawItems(context, canvas, contextInfo);
+            this.drawItems(context, canvas, contextInfo, levelRows, levelCols, level, tileSize);
         });
 
 
         canvas.width = tileSize * levelCols;      //1000             // canvas width. Won't work without it even if you style it from CSS
         canvas.height = tileSize * levelRows;                   // canvas height. Same as before
+
+
 
         // simple WASD listeners
 
@@ -248,37 +286,10 @@ export class ArenaComponent implements OnInit {
 
 
         function renderLevel() {
-            
-            // walls = red boxes
-            context.fillStyle = "#072649";
-            for (var i = 0; i < levelRows; i++) {
-                for (var j = 0; j < levelCols; j++) {
-                    if (level[i][j] == 1) {
-                        context.fillRect(j * tileSize, i * tileSize, tileSize, tileSize);
-                    }
-                }
-            }
 
             contextInfo.font = "30px Arial";
             contextInfo.fillStyle = "#fff200";
             contextInfo.fillText(playerXPos.toString() + ";" + playerYPos.toString(), 50, 50);
-
-            //let tileSizeItem = 10;
-            //context.fillStyle = "#008000";
-            //context.fillRect(14, 18, tileSizeItem, tileSizeItem);
-
-        //     Array.prototype.forEach.call(this.itemsFetc, it => {
-
-        //    if (it.type == "1")
-        //        context.fillStyle = "#008000";
-        //    else if (it.type == "2")
-        //        context.fillStyle = "#00FFFF";
-        //    else if (it.type == "3")
-        //        context.fillStyle = "#0000FF";
-
-        //    let tileSizeItem = 10;
-        //    context.fillRect(it.posX, it.posY, tileSizeItem, tileSizeItem);
-        //});
 
             // player
             context.fillStyle = "#fff200";

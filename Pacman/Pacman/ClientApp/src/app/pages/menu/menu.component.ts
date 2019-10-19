@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { NzNotificationService } from 'ng-zorro-antd';
+import { FormGroup, FormBuilder} from '@angular/forms';
 
 @Component({
   selector: 'xn-menu',
@@ -19,12 +17,8 @@ export class MenuComponent implements OnInit {
   });
 
   constructor(
-    private builder: FormBuilder,
-    private router: Router,
-    private notifications: NzNotificationService) { }
+    private builder: FormBuilder) { }
 
   ngOnInit() {
   }
-
-    submit() {}
 }
