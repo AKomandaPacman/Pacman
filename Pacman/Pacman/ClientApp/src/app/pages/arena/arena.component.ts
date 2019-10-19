@@ -1,14 +1,11 @@
-import { Component, OnInit, OnChanges } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { Player } from 'src/app/models/Player.model';
 import { Item } from 'src/app/models/Item.model';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Observable, timer, interval } from 'rxjs';
-import { update, forEach } from 'lodash-es';
-import { Injectable } from '@angular/core';
+import { interval } from 'rxjs';
 import { forkJoin } from 'rxjs';
-import * as fs from 'fs';
 
 @Component({
     selector: 'xn-arena',
