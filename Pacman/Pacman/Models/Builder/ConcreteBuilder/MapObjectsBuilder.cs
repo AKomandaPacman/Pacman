@@ -9,6 +9,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using System.IO;
+using System.Data.SqlClient;
+using System.Net.Http;
 
 namespace Pacman.Models.Builder.ConcreteBuilder
 {
@@ -56,7 +58,7 @@ namespace Pacman.Models.Builder.ConcreteBuilder
         {
             Item item = new ItemFactory().CreateFood(x, y);
             mapObjects.items.Add(item);
-            _repository.AddAsync(item);
+            //_repository.AddAsync(item);
         }
 
         public void CreateBiggerFood(int x, int y)
