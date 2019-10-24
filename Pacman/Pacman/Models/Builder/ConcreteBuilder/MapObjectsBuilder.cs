@@ -26,12 +26,12 @@ namespace Pacman.Models.Builder.ConcreteBuilder
 
         public void AddPlayers(List<Player> players)
         {
-            mapObjects.players = players;
+            mapObjects.Players = players;
         }
 
         public void AddItems(List<Item> items)
         {
-            mapObjects.items = items;
+            mapObjects.Items = items;
         }
 
         public MapObjects GetObjects()
@@ -41,23 +41,23 @@ namespace Pacman.Models.Builder.ConcreteBuilder
 
         public void AddPlayer(Player player)
         {
-            mapObjects.players.Add(player);
+            mapObjects.Players.Add(player);
         }
 
         public void AddItem(Item item)
         {
-            mapObjects.items.Add(item);
+            mapObjects.Items.Add(item);
         }
 
         public void CreateRandomItem()
         {
-            mapObjects.items.Add(new ItemFactory().CreateRandomItem(null, null));
+            mapObjects.Items.Add(new ItemFactory().CreateRandomItem(null, null));
         }
 
         public void CreateItem(ItemType t, int x, int y)
         {
             Item item = new ItemFactory().CreateItem(t, x, y);
-            mapObjects.items.Add(item);
+            mapObjects.Items.Add(item);
             //_repository.AddAsync(item);
         }
     }

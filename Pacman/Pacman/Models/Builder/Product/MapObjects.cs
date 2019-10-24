@@ -8,8 +8,8 @@ namespace Pacman.Models.Product
 {
     public class MapObjects : Entity
     {
-        public List<Player> players { get; set; }
-        public List<Item> items { get; set; }
+        public List<Player> Players { get; set; }
+        public List<Item> Items { get; set; }
 
         public MapObjects()
         {
