@@ -14,11 +14,15 @@ namespace Pacman.Models.Factory
     public class ItemFactory : Factory
     {
 
-        public override Item CreateRandomItem()
+        public override Item CreateRandomItem(object x, object y)
         {
             Random random = new Random(Math.Abs(Guid.NewGuid().GetHashCode()));
-            var posX = random.Next(100);
-            var posY = random.Next(100);
+            int posX = (int)x, posY = (int)y;
+            if (posX.Equals(null) || posY.Equals(null))
+            {
+                posX = random.Next(100);
+                posY = random.Next(100);
+            }
             var type = random.Next(5);
 
             Item item = new Item
@@ -35,80 +39,16 @@ namespace Pacman.Models.Factory
             return item;
         }
 
-        public override Item CreateFood(int x, int y)
+        public override Item CreateItem(ItemType t, int x, int y)
         {
             Item item = new Item
             {
-                type = ItemType.food,
+                type = t,
                 posX = x,
                 posY = y
             };
 
             Logger.GetLogger().Log($"Created {item.type}");
-
-            PostToDB(item); // saves kreated item to db
-
-            return item;
-        }
-
-        public override Item CreateBiggerFood(int x, int y)
-        {
-            Item item = new Item
-            {
-                type = ItemType.biggerFood,
-                posX = x,
-                posY = y
-            };
-
-            Logger.GetLogger().Log($"Created {item.type}");
-
-            PostToDB(item); // saves kreated item to db
-
-            return item;
-        }
-
-        public override Item CreateTeleportation(int x, int y)
-        {
-            Item item = new Item
-            {
-                type = ItemType.teleportation,
-                posX = x,
-                posY = y
-            };
-
-            Logger.GetLogger().Log($"Created PowerUp {item.type}");
-
-            PostToDB(item); // saves kreated item to db
-
-            return item;
-        }
-
-        public override Item CreateBullet(int x, int y)
-        {
-            Item item = new Item
-            {
-                type = ItemType.bullet,
-                posX = x,
-                posY = y
-            };
-
-            Logger.GetLogger().Log($"Created PowerUp {item.type}");
-
-            PostToDB(item); // saves kreated item to db
-
-            return item;
-        }
-
-        public override Item CreateSpeed(int x, int y)
-        {
-            Item item = new Item
-            {
-                type = ItemType.speed,
-                posX = x,
-                posY = y
-            };
-
-            Logger.GetLogger().Log($"Created PowerUp {item.type}");
 
             PostToDB(item); // saves kreated item to db
 

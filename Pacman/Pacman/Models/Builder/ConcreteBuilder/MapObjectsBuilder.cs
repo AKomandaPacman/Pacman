@@ -51,34 +51,14 @@ namespace Pacman.Models.Builder.ConcreteBuilder
 
         public void CreateRandomItem()
         {
-            mapObjects.items.Add(new ItemFactory().CreateRandomItem());
+            mapObjects.items.Add(new ItemFactory().CreateRandomItem(null, null));
         }
 
-        public void CreateFood(int x, int y)
+        public void CreateItem(ItemType t, int x, int y)
         {
-            Item item = new ItemFactory().CreateFood(x, y);
+            Item item = new ItemFactory().CreateItem(t, x, y);
             mapObjects.items.Add(item);
             //_repository.AddAsync(item);
-        }
-
-        public void CreateBiggerFood(int x, int y)
-        {
-            mapObjects.items.Add(new ItemFactory().CreateBiggerFood(x, y));
-        }
-
-        public void CreateTeleportation(int x, int y)
-        {
-            mapObjects.items.Add(new ItemFactory().CreateTeleportation(x, y));
-        }
-
-        public void CreateBullet(int x, int y)
-        {
-            mapObjects.items.Add(new ItemFactory().CreateBullet(x, y));
-        }
-
-        public void CreateSpeed(int x, int y)
-        {
-            mapObjects.items.Add(new ItemFactory().CreateSpeed(x, y));
         }
     }
 }

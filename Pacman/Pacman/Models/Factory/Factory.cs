@@ -7,11 +7,7 @@ namespace Pacman.Models.Factory
 {
     public abstract class Factory
     {
-        public abstract Item CreateRandomItem();
-        public abstract Item CreateFood(int x, int y);
-        public abstract Item CreateBiggerFood(int x, int y);
-        public abstract Item CreateTeleportation(int x, int y);
-        public abstract Item CreateBullet(int x, int y);
-        public abstract Item CreateSpeed(int x, int y);
+        public abstract Item CreateRandomItem(object x, object y);
+        public abstract Item CreateItem(ItemType t, int x, int y);
     }
 }

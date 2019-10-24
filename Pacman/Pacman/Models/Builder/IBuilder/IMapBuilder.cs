@@ -14,7 +14,7 @@ namespace Pacman.Models.Builder.IBuilder
         void AddItems(List<Item> items);
         void AddItem(Item item);
         void CreateRandomItem();
-
+        void CreateItem(ItemType t, int x, int y);
         MapObjects GetObjects();
     }
 }
