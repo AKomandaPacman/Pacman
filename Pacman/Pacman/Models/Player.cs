@@ -1,21 +1,22 @@
-﻿using Pacman.Models.Shared;
+﻿using Pacman.Models.Decorator;
+using Pacman.Models.Observer;
+using Pacman.Models.Shared;
 using System.Data.SqlClient;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Pacman.Models.Observer;
 
 namespace Pacman.Models
 {
-    public class Player : Entity, IObserver
+    public class Player : Entity, IObserver, IDisplays
     {
         public string name { get; set; }
         public int score { get; set; }
         public double posX { get; set; }
         public double posY { get; set; }
-        public int item { get; set; }
+        public bool boosted { get; set; }
         public bool ghost { get; set; }
+        public string image { get; set; }
+        //public int? skinId { get; set; }
+
 
         public string GetName()
         {
@@ -50,6 +51,13 @@ namespace Pacman.Models
 
             conn.Close();
         }
-        //public int? skinId { get; set; }
+
+        public string GetImage()
+        {
+            PlayerDisplay dImage = new PlayerDisplay();
+            this.image = dImage.GetImage();
+            return this.image;
+
+        }
     }
 }

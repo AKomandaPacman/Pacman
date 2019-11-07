@@ -7,9 +7,9 @@ namespace Pacman.Models.Decorator
 {
     public class FoodDisplay : DisplaysDecorator
     {
-        public void GetImage()
+        public override string GetImage()
         {
-            throw new NotImplementedException();
+            return @"..\Pacman\ClientApp\src\assets\food.png";
         }
     }
 }

@@ -7,5 +7,6 @@ export class Player {
         public posY: number,
         public boosted: boolean,
         public ghost: boolean,
+        public image: string,
     ) { }
 }

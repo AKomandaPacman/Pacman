@@ -50,6 +50,8 @@ namespace Pacman.Migrations
 
                     b.Property<bool>("ghost");
 
+                    b.Property<string>("image");
+
                     b.Property<string>("name");
 
                     b.Property<double>("posX");

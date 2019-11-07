@@ -7,5 +7,9 @@ namespace Pacman.Models.Decorator
 {
     public class SpeedDisplay : DisplaysDecorator
     {
+        public override string GetImage()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
