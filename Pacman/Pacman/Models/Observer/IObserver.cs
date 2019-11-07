@@ -7,8 +7,7 @@ namespace Pacman.Models.Observer
 {
     public interface IObserver
     {
-        void Update(string name, int score);
-
+        void Update();
         int GetScore();
         string GetName();
     }

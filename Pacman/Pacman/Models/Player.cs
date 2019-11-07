@@ -4,10 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Pacman.Models.Observer;
 
 namespace Pacman.Models
 {
-    public class Player : Entity
+    public class Player : Entity, IObserver
     {
         public string name { get; set; }
         public int score { get; set; }
@@ -26,7 +27,7 @@ namespace Pacman.Models
             return score;
         }
 
-        public void Update(string name, int score)
+        public void Update()
         {
             string connetionString;
             SqlConnection conn;
