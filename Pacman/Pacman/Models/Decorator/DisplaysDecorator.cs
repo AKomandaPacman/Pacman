@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Pacman.Models.Decorator
 {
-    public class DisplaysDecorator : IDisplays
+    public abstract class DisplaysDecorator : IDisplays
     {
-        public void GetImage()
-        {
-            throw new NotImplementedException();
-        }
+        string image;
+        public abstract string GetImage();
     }
 }

@@ -38,6 +38,7 @@ namespace Pacman.Controllers
             {
                 return NotFound();
             }
+            player.image = player.GetImage();
 
             return player;
         }
@@ -96,6 +97,13 @@ namespace Pacman.Controllers
             await _context.SaveChangesAsync();
 
             return player;
+        }
+
+
+        [HttpGet]
+        public async Task<ActionResult<string>> Image()
+        {
+            return new Player().GetImage();
         }
 
         private bool PlayerExists(int id)
