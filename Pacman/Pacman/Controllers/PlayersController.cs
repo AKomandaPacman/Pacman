@@ -101,7 +101,7 @@ namespace Pacman.Controllers
 
 
         [HttpGet]
-        public async Task<ActionResult<string>> Image()
+        public ActionResult<string> Image()
         {
             return new Player().GetImage();
         }

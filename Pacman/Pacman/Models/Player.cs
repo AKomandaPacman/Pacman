@@ -38,14 +38,15 @@ namespace Pacman.Models
             conn = new SqlConnection(connetionString);
             conn.Open();
 
-            string query = "UPDATE Player SET score = @pS, posX = @pX, posY = @pY, item = @pI, ghost = @pH WHERE name = @pN";
+            string query = "UPDATE Player SET score = @pS, posX = @pX, posY = @pY, boosted = @pB, image = @pI, ghost = @pH WHERE name = @pN";
             //string query = "set Where [dbo].[Items]([LastUpdated],[type],[posX],[posY])VALUES(@pLU, @pT, @pX, @pY);";
             SqlCommand cmd = new SqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@pN", name);
             cmd.Parameters.AddWithValue("@pS", score);
             cmd.Parameters.AddWithValue("@pX", posX);
             cmd.Parameters.AddWithValue("@pY", posY);
-            cmd.Parameters.AddWithValue("@pI", item);
+            cmd.Parameters.AddWithValue("@pB", boosted);
+            cmd.Parameters.AddWithValue("@pI", image);
             cmd.Parameters.AddWithValue("@pH", ghost);
             cmd.ExecuteNonQueryAsync();
 
