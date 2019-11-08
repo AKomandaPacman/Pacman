@@ -19,7 +19,6 @@ export class ArenaComponent implements OnInit {
     currentPlayerPosX: number = <number>{};
     currentPlayerPosY: number = <number>{};
     player: Player = <Player>{};
-    //playerImage: string = <string>{};
     itemsAll: Item[] = <Item[]>{};
     itemsFetched: Item[] = <Item[]>[{ id: 0, type: "1", posX: 0, posY: 0 }];
     updatedX: number = <number>{};
@@ -38,15 +37,12 @@ export class ArenaComponent implements OnInit {
 
         let getPlayers = this.http.get<Player>(`${environment.backend_url}/Players/1`);
         let getItems = this.http.get<Item[]>(`${environment.backend_url}/Items`);
-        //let image = this.http.get<string>(`${environment.backend_url}/Players`);
 
         forkJoin([getPlayers, getItems]).subscribe(results => {
-        //forkJoin([getPlayers, getItems, image]).subscribe(results => {
             this.currentPlayerPosX = results[0].posX;
             this.currentPlayerPosY = results[0].posY;
             this.player = results[0];
             this.itemsFetched = results[1];
-            //this.playerImage = results[2];
         });
     }
 
@@ -231,6 +227,15 @@ export class ArenaComponent implements OnInit {
         });
 
         interval(1).subscribe(x => {
+           
+            //contextInfo.fillText(this.player + ";" + this.player.image, 50, 50);
+            const base_image = new Image();
+            base_image.src = this.player.image;
+            //base_image.src = 'assets/p_yellow.png';
+            base_image.onload = function () {
+                context.drawImage(base_image, playerXPos, playerYPos, tileSize, tileSize);
+                let dataUrl = canvas.toDataURL('image/png');
+            }
             this.drawItems(context, canvas, contextInfo, levelRows, levelCols, level, tileSize);
         });
 
@@ -292,18 +297,21 @@ export class ArenaComponent implements OnInit {
             contextInfo.fillStyle = "#fff200";
             contextInfo.fillText(playerXPos.toString() + ";" + playerYPos.toString(), 50, 50);
 
+            //player image code
+            //contextInfo.fillText(this.player + ";" + this.player.image, 50, 50);
 
             // player
             //context.fillStyle = "#fff200";
             //context.fillRect(playerXPos, playerYPos, tileSize, tileSize);
-            const base_image = new Image();
-            
-            //base_image.src = this.player.image;
-            base_image.src = 'assets/p_yellow.png';
-            base_image.onload = function () {
-                context.drawImage(base_image, playerXPos, playerYPos, tileSize, tileSize);
-                let dataUrl = canvas.toDataURL('image/png');
-            }
+            //const base_image = new Image();
+            ////base_image.src = this.player.image;
+            //base_image.src = 'assets/p_yellow.png';
+            //base_image.onload = function () {
+            //    context.drawImage(base_image, playerXPos, playerYPos, tileSize, tileSize);
+            //    let dataUrl = canvas.toDataURL('image/png');
+            //}
+
+
         }
 
 
