@@ -26,6 +26,7 @@ export class ArenaComponent implements OnInit {
     levelRows: number = 9;
     levelCols: number = 16;
     tileSize: number = 25;
+    imageFile: string = "";
 
 
     constructor(private builder: FormBuilder, private http: HttpClient) {
@@ -41,6 +42,7 @@ export class ArenaComponent implements OnInit {
         forkJoin([getPlayers, getItems]).subscribe(results => {
             this.currentPlayerPosX = results[0].posX;
             this.currentPlayerPosY = results[0].posY;
+            this.imageFile = results[0].image;
             this.player = results[0];
             this.itemsFetched = results[1];
         });
@@ -66,7 +68,6 @@ export class ArenaComponent implements OnInit {
         this.http
             .put<Player>(`${environment.backend_url}/Players/1`, this.player)
             .subscribe();
-
     }
 
     drawItems(context, canvas, contextInfo, levelRows, levelCols, level, tileSize) {
@@ -232,12 +233,19 @@ export class ArenaComponent implements OnInit {
             // player
             //context.fillStyle = "#fff200";
             //context.fillRect(playerXPos, playerYPos, tileSize, tileSize);
+
+            
             
             const base_image = new Image();
             //base_image.src = this.player.image;
-            base_image.src = 'assets/p_yellow.png';
+            base_image.src = this.imageFile;
+            //base_image.src = 'assets/p_yellow.png';
             context.drawImage(base_image, playerXPos, playerYPos, tileSize, tileSize);
             let dataUrl = canvas.toDataURL('image/png');
+
+            contextInfo.font = "15px Arial";
+            contextInfo.fillStyle = "#fff200";
+            contextInfo.fillText(this.imageFile, 50, 150);
         });
 
 
