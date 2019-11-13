@@ -190,9 +190,9 @@ export class ArenaComponent implements OnInit {
 
 
 
-        //var mapNumber = Math.floor(Math.random() * 2) + 1;
-        //var fileName = "../../../assets/maps/map" + mapNumber.toString() + ".txt";
-        var fileName = "../../../assets/maps/map2.txt";
+        var mapNumber = Math.floor(Math.random() * 2) + 1;
+        var fileName = "../../../assets/maps/map" + mapNumber.toString() + ".txt";
+        //var fileName = "../../../assets/maps/map2.txt";
 
         var allText = "";
         var file = new XMLHttpRequest();
@@ -227,16 +227,17 @@ export class ArenaComponent implements OnInit {
         });
 
         interval(1).subscribe(x => {
-           
-            //contextInfo.fillText(this.player + ";" + this.player.image, 50, 50);
-            const base_image = new Image();
-            base_image.src = this.player.image;
-            //base_image.src = 'assets/p_yellow.png';
-            base_image.onload = function () {
-                context.drawImage(base_image, playerXPos, playerYPos, tileSize, tileSize);
-                let dataUrl = canvas.toDataURL('image/png');
-            }
             this.drawItems(context, canvas, contextInfo, levelRows, levelCols, level, tileSize);
+
+            // player
+            //context.fillStyle = "#fff200";
+            //context.fillRect(playerXPos, playerYPos, tileSize, tileSize);
+            
+            const base_image = new Image();
+            //base_image.src = this.player.image;
+            base_image.src = 'assets/p_yellow.png';
+            context.drawImage(base_image, playerXPos, playerYPos, tileSize, tileSize);
+            let dataUrl = canvas.toDataURL('image/png');
         });
 
 
@@ -296,22 +297,6 @@ export class ArenaComponent implements OnInit {
             contextInfo.font = "30px Arial";
             contextInfo.fillStyle = "#fff200";
             contextInfo.fillText(playerXPos.toString() + ";" + playerYPos.toString(), 50, 50);
-
-            //player image code
-            //contextInfo.fillText(this.player + ";" + this.player.image, 50, 50);
-
-            // player
-            //context.fillStyle = "#fff200";
-            //context.fillRect(playerXPos, playerYPos, tileSize, tileSize);
-            //const base_image = new Image();
-            ////base_image.src = this.player.image;
-            //base_image.src = 'assets/p_yellow.png';
-            //base_image.onload = function () {
-            //    context.drawImage(base_image, playerXPos, playerYPos, tileSize, tileSize);
-            //    let dataUrl = canvas.toDataURL('image/png');
-            //}
-
-
         }
 
 
