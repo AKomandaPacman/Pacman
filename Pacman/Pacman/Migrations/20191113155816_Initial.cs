@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Pacman.Migrations
 {
-    public partial class Init : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -36,7 +36,8 @@ namespace Pacman.Migrations
                     posX = table.Column<double>(nullable: false),
                     posY = table.Column<double>(nullable: false),
                     boosted = table.Column<bool>(nullable: false),
-                    ghost = table.Column<bool>(nullable: false)
+                    ghost = table.Column<bool>(nullable: false),
+                    image = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {

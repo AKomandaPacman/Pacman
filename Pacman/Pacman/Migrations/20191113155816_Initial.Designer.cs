@@ -10,8 +10,8 @@ using Pacman;
 namespace Pacman.Migrations
 {
     [DbContext(typeof(PacmanContext))]
-    [Migration("20191018040650_Init")]
-    partial class Init
+    [Migration("20191113155816_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -51,6 +51,8 @@ namespace Pacman.Migrations
                     b.Property<bool>("boosted");
 
                     b.Property<bool>("ghost");
+
+                    b.Property<string>("image");
 
                     b.Property<string>("name");
 
