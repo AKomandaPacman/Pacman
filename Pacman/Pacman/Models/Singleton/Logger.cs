@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,7 +14,7 @@ namespace Pacman.Models.Singleton
 
         private Logger()
         {
-
+            if (File.Exists("log.txt")) File.Delete("log.txt");
         }
 
         public static Logger GetLogger()
@@ -29,6 +30,12 @@ namespace Pacman.Models.Singleton
         public void Log(String text)
         {
             Console.WriteLine(text);
+
+            using(StreamWriter w = File.AppendText("log.txt"))
+            {
+                w.WriteLine(text);
+            }
+
             this.LastLog = text;
         }
 
