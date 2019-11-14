@@ -13,6 +13,8 @@ namespace Pacman.Models.Product
 
         public MapObjects()
         {
+            Players = new List<Player>();
+            Items = new List<Item>();
         }
     }
 }

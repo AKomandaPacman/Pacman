@@ -17,16 +17,20 @@ namespace Pacman.Models.Factory
         public override Item CreateRandomItem(object x, object y)
         {
             Random random = new Random(Math.Abs(Guid.NewGuid().GetHashCode()));
-            int posX = (int)x, posY = (int)y;
-            if (posX.Equals(null) || posY.Equals(null))
+            int posX, posY;
+            if (x == (null) || y == (null))
             {
                 posX = random.Next(100);
                 posY = random.Next(100);
             }
+            else { posX = (int)x; posY = (int)y; }
+            
             var type = random.Next(5);
 
             Item item = new Item
             {
+                Id = 1,
+                LastUpdated = DateTime.Now,
                 type = (ItemType)random.Next(Enum.GetValues(typeof(ItemType)).Cast<ItemType>().Count()),
                 posX = posX,
                 posY = posY
@@ -60,7 +64,7 @@ namespace Pacman.Models.Factory
             string connetionString;
             SqlConnection conn;
 
-            connetionString = @"Server=(localdb)\\MSSQLLocalDB;Database=PacmanDB;Trusted_Connection=True;MultipleActiveResultSets=true";
+            connetionString = "Server=(localdb)\\MSSQLLocalDB;Database=PacmanDB;Trusted_Connection=True;MultipleActiveResultSets=true";
 
             conn = new SqlConnection(connetionString);
             conn.Open();
@@ -71,7 +75,7 @@ namespace Pacman.Models.Factory
             cmd.Parameters.AddWithValue("@pT", item.type);
             cmd.Parameters.AddWithValue("@pX", item.posX);
             cmd.Parameters.AddWithValue("@pY", item.posY);
-            cmd.ExecuteNonQueryAsync();
+            cmd.ExecuteScalar();
 
             conn.Close();
         }
