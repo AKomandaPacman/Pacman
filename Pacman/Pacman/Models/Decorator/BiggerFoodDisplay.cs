@@ -9,7 +9,7 @@ namespace Pacman.Models.Decorator
     {
         public override string GetImage()
         {
-            throw new NotImplementedException();
+            return @"assets/food.png";
         }
     }
 }
