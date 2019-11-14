@@ -19,9 +19,9 @@ namespace Pacman
                 //await myDbContext.Database.MigrateAsync();
             }
 
-            
 
-            LoggerInit().GetAwaiter().GetResult();
+
+            Logger logger = LoggerInit();
 
             await webHost.RunAsync();
         }
@@ -30,11 +30,12 @@ namespace Pacman
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>();
 
-        public static async Task LoggerInit()
+        public static Logger LoggerInit()
         {
             Logger logger = Logger.GetLogger();
             logger.Log("Logger created.");
             logger.Log("Test.");
+            return logger;
         }
     }
 }
