@@ -24,6 +24,10 @@ namespace Pacman.Models.Builder.ConcreteBuilder
             _repository = repository;
         }
 
+        public MapObjectsBuilder()
+        {
+        }
+
         public void AddPlayers(List<Player> players)
         {
             mapObjects.Players = players;

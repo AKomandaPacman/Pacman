@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Pacman.Repository;
+using Pacman.Services;
 
 namespace Pacman
 {
@@ -23,6 +24,7 @@ namespace Pacman
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddHostedService<MyHostedA>();
 
             services.AddScoped<IItemRepository, ItemRepository>();
 
