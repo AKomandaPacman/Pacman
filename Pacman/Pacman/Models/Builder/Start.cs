@@ -65,16 +65,15 @@ namespace Pacman.Models.Builder
             var yEnd = yStart + 20 / 2 + (int)Math.Floor((decimal)7 / 2); // maistui
             var xEnd = xStart + 20 / 2;
 
-            var posY = random.Next(yStart, yEnd);
-            var posX = random.Next(xStart, xEnd);
-
             ItemFactory factory = new ItemFactory();
 
 
             //5 random foodai
             for(int i =0;i<5;i++)
             {
-                factory.CreateItem(0, posX[i], posY[i]);
+                var posY = random.Next(yStart, yEnd);
+                var posX = random.Next(xStart, xEnd);
+                factory.CreateItem(0, posX, posY);
             }
         }
        
