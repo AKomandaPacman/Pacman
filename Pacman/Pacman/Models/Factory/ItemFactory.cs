@@ -36,7 +36,7 @@ namespace Pacman.Models.Factory
                 posY = posY
             };
 
-            Logger.GetLogger().Log($"Created PowerUp {item.type}");
+            Logger.GetLogger().Log($"Created PowerUp {item.type}.");
 
             PostToDB(item); // saves kreated item to db
 
@@ -47,12 +47,14 @@ namespace Pacman.Models.Factory
         {
             Item item = new Item
             {
+                Id = 1,
+                LastUpdated = DateTime.Now,
                 type = t,
                 posX = x,
                 posY = y
             };
 
-            Logger.GetLogger().Log($"Created {item.type}");
+            Logger.GetLogger().Log($"Created {item.type}.");
 
             PostToDB(item); // saves kreated item to db
 

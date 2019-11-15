@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Hosting;
+using Pacman.Models.Builder;
 using Pacman.Models.Builder.ConcreteBuilder;
 using System;
 using System.Collections.Generic;
@@ -35,7 +36,9 @@ namespace Pacman.Services
 
             MapObjectsBuilder builder = new MapObjectsBuilder();
             //builder.AddPlayers((List<Player>)players);
-            builder.CreateRandomItem();
+            //builder.CreateRandomItem();
+            Start test = new Start();
+            test.main();
         }
     }
 }
