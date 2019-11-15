@@ -234,18 +234,25 @@ export class ArenaComponent implements OnInit {
             //context.fillStyle = "#fff200";
             //context.fillRect(playerXPos, playerYPos, tileSize, tileSize);
 
-            
-            
-            const base_image = new Image();
-            //base_image.src = this.player.image;
-            base_image.src = this.imageFile;
-            //base_image.src = 'assets/p_yellow.png';
-            context.drawImage(base_image, playerXPos, playerYPos, tileSize, tileSize);
-            let dataUrl = canvas.toDataURL('image/png');
+            var isGh = false;
 
-            contextInfo.font = "15px Arial";
-            contextInfo.fillStyle = "#fff200";
-            contextInfo.fillText(this.imageFile, 50, 150);
+            if (isGh) {   //if (this.isGhost)
+                const base_image = new Image();
+                base_image.src = 'assets/g_pink.png';
+                context.drawImage(base_image, playerXPos, playerYPos, tileSize, tileSize);
+            }
+            else {
+                const base_image = new Image();
+                //base_image.src = this.player.image;
+                base_image.src = this.imageFile;
+                //base_image.src = 'assets/p_yellow.png';
+                context.drawImage(base_image, playerXPos, playerYPos, tileSize, tileSize);
+                let dataUrl = canvas.toDataURL('image/png');
+
+                contextInfo.font = "15px Arial";
+                contextInfo.fillStyle = "#fff200";
+                contextInfo.fillText(this.imageFile, 50, 150);
+            }
         });
 
 
