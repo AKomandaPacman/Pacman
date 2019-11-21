@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Pacman.Models.Bridge
 {
-    public class Wall : Part
+    public class Tiles : Part
     {
         private string color;
 
@@ -16,10 +16,6 @@ namespace Pacman.Models.Bridge
 
         public override void paint()
         {
-            /* manau kazkaip reik priskirt wall klase fronto vietai kur kuriamos sienos
-             * o paskui kvieciant Type klases metoda paintWallBlack ar kita ir
-             * pagal ideja turetu pasikeist spalva 
-             */
             this.color = _Icolor.setColor();
 
         }
